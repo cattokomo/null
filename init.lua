@@ -48,9 +48,8 @@ local fs = require('nelua.utils.fs')
 local lfs = require('lfs')
 local platform = require('nelua.utils.platform')
 local stringer = require('nelua.utils.stringer')
-local tabler   = require('nelua.utils.tabler')
+local tabler = require('nelua.utils.tabler')
 local types = require('nelua.thirdparty.tableshape').types
-local inspect = require('nelua.thirdparty.inspect')
 
 local colors = console.colors
 local cachedir = fs.join(fs.getusercachepath('nelua'), 'null')
@@ -177,17 +176,20 @@ local function validate_prop(name, config)
         name = types.string,
         version = types.string,
         dependencies = types.shape({}, {
-            extra_fields = types.map_of(types.string, types.shape{
-                path = (types.string * types.custom(function(val)
-                    if not fs.isdir(val) then
-                        return nil, "'"..val.."' isn't a directory"
-                    end
-                    return true
-                end)):is_optional(),
-                url = types.string:is_optional(),
-                hash = types.string:is_optional()
-            })
-        })
+            extra_fields = types.map_of(
+                types.string,
+                types.shape({
+                    path = (types.string * types.custom(function(val)
+                        if not fs.isdir(val) then
+                            return nil, "'" .. val .. "' isn't a directory"
+                        end
+                        return true
+                    end)):is_optional(),
+                    url = types.string:is_optional(),
+                    hash = types.string:is_optional(),
+                })
+            ),
+        }),
     }, {
         extra_fields = types.map_of(types.string, types.any),
     })
@@ -200,8 +202,8 @@ local function validate_prop(name, config)
     end
 
     for k, v in pairs(config.dependencies) do
-        if types.shape {} (v) then
-            err_("spec dependency '"..k.."' is empty")
+        if types.shape({})(v) then
+            err_("spec dependency '" .. k .. "' is empty")
             return false
         end
     end
@@ -214,10 +216,6 @@ end
 ---@param depdir string
 local function setup_dir(name, config, depdir)
     os.rename(depdir, fs.join(cachedir, name, config.version))
-    local current_dir = fs.join(cachedir, name, 'current')
-    if lfs.attributes(current_dir, 'mode') ~= 'link' then
-        os.remove(current_dir)
-    end
     lfs.link(fs.join(cachedir, name, config.version), fs.join(cachedir, name, 'current'), true)
 end
 
@@ -228,8 +226,8 @@ end
 ---@return integer?
 local function tarball_dep_require(name, url, hash)
     local depdir = fs.join(cachedir, name, 'current')
-    local exist = lfs.attributes(fs.join(cachedir, name, 'current'), 'mode')
-    if not exist or (exist and not exist ~= 'link') then
+    local exist = lfs.symlinkattributes(depdir, 'mode')
+    if exist ~= 'link' then
         fs.makepath(tarball_cachedir)
 
         info("installing dependency '" .. name .. "'")
@@ -277,7 +275,7 @@ local function tarball_dep_require(name, url, hash)
     else
         local neluacfg = fs.readfile('./.neluacfg.lua')
         ---@cast neluacfg string
-        local fn = assert(load(neluacfg, '@[null].'..name))
+        local fn = assert(load(neluacfg, '@[null].' .. name))
         config, spec = fn()
         config, spec = config or {}, spec or { name = name, version = 'unknown', dependencies = {} }
     end
@@ -321,7 +319,7 @@ local function local_dep_require(name, path)
     else
         local neluacfg = fs.readfile('./.neluacfg.lua')
         ---@cast neluacfg string
-        local fn = assert(load(neluacfg, '@[null].'..name))
+        local fn = assert(load(neluacfg, '@[null].' .. name))
         config, spec = fn()
         config, spec = config or {}, spec or { name = name, version = 'unknown', dependencies = {} }
     end

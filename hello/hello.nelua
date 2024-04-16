@@ -1,5 +1,0 @@
-global hello = @record{}
-
-function hello.world()
-  print("hello world")
-end
