@@ -53,7 +53,7 @@ A checksum of the tarball, currently only support SHA-256.
 
 #### `path -> string`
 
-> [!INFO]
+> [!NOTE]
 > This functionality might changed in the next release.
 
 Local path to dependency directory, if none found then fallback to fetching tarball source.
