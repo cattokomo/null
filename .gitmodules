@@ -1,3 +1,12 @@
 [submodule "deps/nelua-lang"]
 	path = deps/nelua-lang
 	url = https://github.com/edubart/nelua-lang
+[submodule "deps/lua-amalg"]
+	path = deps/lua-amalg
+	url = https://github.com/siffiejoe/lua-amalg/
+[submodule "deps/easy-http"]
+	path = deps/easy-http
+	url = https://github.com/Frityet/easy-http
+[submodule "deps/pure_lua_SHA"]
+	path = deps/pure_lua_SHA
+	url = https://github.com/Egor-Skriptunoff/pure_lua_SHA
