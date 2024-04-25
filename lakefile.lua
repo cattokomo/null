@@ -32,29 +32,42 @@ end
 
 local amalg = './deps/lua-amalg/src/amalg.lua'
 
-Easyhttp = c.shared({ 'easyhttp', src = './deps/easy-http/src/* ./deps/easy-http/src/extern/*', needs = 'libcurl' })
+Easyhttp = c.shared({ 'easyhttp', src = './deps/easy-http/src/* ./deps/easy-http/src/extern/*', needs = 'libcurl', odir = './build' })
 
 local files = {}
 path.get_files(files, './src/null/', '%.lua$')
 
-Null = target('null.lua', table.concat(files, ' '), function(t)
+Null = target('build/null.lua', table.concat(files, ' '), function(t)
     map(t.deps, function(v)
         print(v)
         local module = path.basename(path.splitext(v))
         return 'null.' .. module
     end)
+    local package = package
     package.path = package.path
         .. ';'
         .. table.concat({
             './src/?.lua',
             './deps/pure_lua_SHA/?.lua',
         }, ';')
+    package.cpath = package.cpath .. ';' .. table.concat({'./build/?.' .. DLL_EXT}, ';')
+
+    local nelua_lua
+    for i = 1, math.huge do
+        nelua_lua = arg[-i]
+        if nelua_lua and not arg[-(i+1)] then
+            break
+        end
+    end
+    nelua_lua = require("nelua.utils.fs").findbinfile(nelua_lua) or path.abs(nelua_lua)
+
     local fn, err = loadfile(amalg, 't')
     if fn then
         fn(
             '--c-libs',
             '--script=./src/main.lua',
             '--output=' .. t.target,
+            '--shebang=' .. nelua_lua,
             '--',
             'sha2',
             'easyhttp',
@@ -63,6 +76,11 @@ Null = target('null.lua', table.concat(files, ' '), function(t)
     else
         quit(err)
     end
+
+    if not WINDOWS then
+        utils.execute("chmod 755 "..t.target)
+    end
 end)
+Null.output_dir = "./build"
 
 default({ Easyhttp, Null })

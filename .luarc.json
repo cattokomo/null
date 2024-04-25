@@ -1,7 +1,10 @@
 {
     "$schema": "https://github.com/LuaLS/vscode-lua/raw/master/setting/schema.json",
     "workspace.library": [
+        "./src",
         "./deps/nelua-lang/lualib/",
+        "./deps/easy-http/types/",
+        "./deps/pure_lua_SHA/",
         "${3rd}/lfs/library"
     ]
 }
