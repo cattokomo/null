@@ -1,3 +1,0 @@
-[submodule "deps/nelua-lang"]
-	path = deps/nelua-lang
-	url = https://github.com/edubart/nelua-lang
