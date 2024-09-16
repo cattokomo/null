@@ -1,0 +1,6 @@
+[submodule "deps/lua-amalg"]
+	path = deps/lua-amalg
+	url = https://github.com/siffiejoe/lua-amalg/
+[submodule "deps/bake"]
+	path = deps/bake
+	url = https://github.com/hyperupcall/bake
