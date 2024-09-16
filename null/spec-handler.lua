@@ -1,15 +1,13 @@
 local specfunc = require("null.specfuncs")
 
 local handler = {
-	dephandler = {}
+  dephandler = {},
 }
 
-function handler.dephandler.git(spec)
-	
-end
+function handler.dephandler.git(spec) end
 
 function handler.load()
-	Deps = {}
+  Deps = {}
   local specfuncs = specfunc()
   assert(loadfile("null.spec", "t", specfuncs))()
 end

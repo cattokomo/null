@@ -38,7 +38,11 @@ local spec_funcs = {
 
   as = function(name)
     if name:match("^%-") or name:match("^[^A-Za-z0-9._-]+$") then
-    	error("invalid dependancy identifier: %{green}" .. name .. "%{reset}, must contain %{blue}[A-Za-z0.9_-]%{reset} character and does not start with %{blue}-%{reset} character!")
+      error(
+        "invalid dependancy identifier: %{green}"
+          .. name
+          .. "%{reset}, must contain %{blue}[A-Za-z0.9_-]%{reset} character and does not start with %{blue}-%{reset} character!"
+      )
     end
     Last.name = name
   end,
